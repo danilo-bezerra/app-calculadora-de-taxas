@@ -14,7 +14,7 @@ type Props = TouchableHighlightProps & {
 export default function Button({ text, ...props }: Props) {
   return (
     <TouchableHighlight style={styles.button} underlayColor="#28fa" {...props}>
-      <Text style={styles.buttonText}>Calcular</Text>
+      <Text style={styles.buttonText}>{text}</Text>
     </TouchableHighlight>
   );
 }

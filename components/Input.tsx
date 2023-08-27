@@ -7,15 +7,19 @@ import {
 } from "react-native";
 
 type Props = TextInputProps & {
-  label: string;
+  label?: string;
   error?: string;
 };
 
 export const Input = ({ label, error, ...inputProps }: Props) => (
   <View style={styles.container}>
-    <Text style={styles.label}>{label}</Text>
-    <TextInput style={styles.input} {...inputProps} />
-    {error && <Text style={styles.errorLabel}>{error}</Text>}
+    {label ? <Text style={styles.label}>{label}</Text> : null}
+    <TextInput
+      style={styles.input}
+      placeholderTextColor="#fff5"
+      {...inputProps}
+    />
+    {error ? <Text style={styles.errorLabel}>{error}</Text> : null}
   </View>
 );
 
