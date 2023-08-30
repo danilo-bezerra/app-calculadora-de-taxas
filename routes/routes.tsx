@@ -1,22 +1,38 @@
-import { NavigationContainer } from "@react-navigation/native";
-
-const Stack = createNativeStackNavigator();
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "../screens/HomeScreen";
 import InterestRates from "../screens/InterestRates";
+
+import { NavigationContainer } from "@react-navigation/native";
+
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
+import AntDesign from "react-native-vector-icons/AntDesign";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome";
+
+const Tab = createBottomTabNavigator();
 
 export default function Routes() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
+      <Tab.Navigator
+        screenOptions={{
+          tabBarActiveBackgroundColor: "#1e1e1e",
+          tabBarInactiveBackgroundColor: "#222",
+          tabBarIconStyle: {
+            
+          }
+        }}
+      >
+        <Tab.Screen
           name="Home"
           component={HomeScreen}
           options={{
             headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <AntDesign name="calculator" color={color} size={size} />
+            ),
           }}
         />
-        <Stack.Screen
+        <Tab.Screen
           name="InterestRates"
           component={InterestRates}
           options={{
@@ -24,9 +40,13 @@ export default function Routes() {
             headerStyle: {
               backgroundColor: "#28f",
             },
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <FontAwesome6 name="percent" color={color} size={size} />
+            ),
           }}
         />
-      </Stack.Navigator>
+      </Tab.Navigator>
     </NavigationContainer>
   );
 }

@@ -11,6 +11,7 @@ import Button from "./Button";
 import { StyleSheet } from "react-native";
 import { ScrollView } from "react-native";
 import { Input } from "./Input";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { schema: formSchema, keys: formKeys } = generateInterestRatesSchema();
 
@@ -19,6 +20,8 @@ type Props = {
 };
 
 export default function InterestRatesForm({ initialValue }: Props) {
+  const [isSaved, setIsSaved] = useState(true);
+
   const {
     setValue,
     getValues,
@@ -39,20 +42,23 @@ export default function InterestRatesForm({ initialValue }: Props) {
         "Taxas salvas",
         "As taxas salvas estarão disponíveis na próxima vez que você abrir o app"
       );
+      setIsSaved(true);
     } catch (e) {
       alert("Erro ao salvar");
     }
   }
 
   return (
-    <View style={styles.container}>
-      <Button text="Salvar" onPress={handleSubmit(onSubmit)} />
+    <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         {formKeys.map((key) => (
           <Input
             key={key}
             label={key}
-            onChangeText={(t) => setValue(key, t)}
+            onChangeText={(t) => {
+              setValue(key, t);
+              setIsSaved(false);
+            }}
             error={errors[key]?.message}
             placeholder="ex: 3.5%"
             keyboardType="decimal-pad"
@@ -60,7 +66,12 @@ export default function InterestRatesForm({ initialValue }: Props) {
           />
         ))}
       </ScrollView>
-    </View>
+      <Button
+        text={isSaved ? "Salvo" : "Salvar"}
+        onPress={handleSubmit(onSubmit)}
+        disabled={isSaved}
+      />
+    </SafeAreaView>
   );
 }
 
@@ -71,6 +82,8 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   scrollView: {
-    marginTop: 12,
+    flex: 1,
+    marginTop: 0,
+    marginBottom: 16,
   },
 });

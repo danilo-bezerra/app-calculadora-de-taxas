@@ -9,6 +9,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { Input } from "../components/Input";
 import Button from "../components/Button";
 import Checkbox from "../components/checkbox";
+import { getStoredInterestRates } from "../src/utils/util";
 
 const formSchema = z.object({
   value: z
@@ -24,9 +25,14 @@ const formSchema = z.object({
 
 export default function HomeScreen({ navigation }) {
   const [passOnInterestRate, setPassOnInterestRate] = useState(false);
+  const [interestRate, setInterestRate] = useState("");
+  const [savedInterestRates, setSavedInterestRates] = useState<{
+    [key: string]: string;
+  }>({});
 
   const {
     register,
+    getValues,
     setValue: setFormValue,
     handleSubmit,
     formState: { errors },
@@ -48,7 +54,7 @@ export default function HomeScreen({ navigation }) {
 
       const resultMessage = `Total: R$ ${totalValue.toFixed(
         2
-      )}\nJuros: R$ ${totalTax.toFixed(
+      )}\nJuros: (${taxPercentage}%) R$ ${totalTax.toFixed(
         2
       )}\nParcelas: ${installments} x R$ ${installmentValue.toFixed(
         2
@@ -63,6 +69,26 @@ export default function HomeScreen({ navigation }) {
     register("interestRate");
     register("installmentsNum");
   }, [register]);
+
+  useEffect(() => {
+    const interestRate = savedInterestRates[`${getValues()?.installmentsNum}x`];
+    console.log({ interestRate });
+    console.log("oi");
+    if (interestRate != null && interestRate != getValues("interestRate")) {
+      console.log({ interestRate });
+    }
+  }, [getValues()]);
+
+  useEffect(() => {
+    getStoredInterestRates().then((saved) => {
+      if (saved != null) {
+        setSavedInterestRates(saved);
+        console.log(saved);
+      }
+    });
+  }, []);
+
+  console.log(savedInterestRates);
 
   // adicionar função de cadastro de taxas por quantidade de parcelas
 
@@ -83,7 +109,11 @@ export default function HomeScreen({ navigation }) {
         label="Taxa de juros"
         placeholder="ex: 12.50"
         placeholderTextColor="#fffa"
-        onChangeText={(v) => setFormValue("interestRate", v)}
+        value={interestRate}
+        onChangeText={(v) => {
+          setFormValue("interestRate", v);
+          setInterestRate(v);
+        }}
         keyboardType="decimal-pad"
         error={errors["interestRate"]?.message}
       />
@@ -91,7 +121,13 @@ export default function HomeScreen({ navigation }) {
         label="Número de parcelas "
         placeholder="ex: 10"
         placeholderTextColor="#fffa"
-        onChangeText={(v) => setFormValue("installmentsNum", v)}
+        onChangeText={(v) => {
+          setFormValue("installmentsNum", v);
+          setInterestRate(
+            savedInterestRates[`${getValues()?.installmentsNum}x`] ||
+              interestRate
+          );
+        }}
         keyboardType="decimal-pad"
         error={errors["installmentsNum"]?.message}
       />
@@ -102,13 +138,6 @@ export default function HomeScreen({ navigation }) {
       />
 
       <Button text="Calcular" onPress={handleSubmit(calc)} />
-
-      <View style={styles.footer}>
-        <Button
-          text="Gerenciar taxas"
-          onPress={() => navigation.navigate("InterestRates")}
-        />
-      </View>
     </SafeAreaView>
   );
 }

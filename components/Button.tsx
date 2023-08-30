@@ -11,9 +11,18 @@ type Props = TouchableHighlightProps & {
   text: string;
 };
 
-export default function Button({ text, ...props }: Props) {
+export default function Button({ text, disabled, ...props }: Props) {
   return (
-    <TouchableHighlight style={styles.button} underlayColor="#28fa" {...props}>
+    <TouchableHighlight
+      style={
+        disabled
+          ? { ...styles.button, ...styles.buttonDisabled }
+          : styles.button
+      }
+      underlayColor="#28fa"
+      disabled={disabled}
+      {...props}
+    >
       <Text style={styles.buttonText}>{text}</Text>
     </TouchableHighlight>
   );
@@ -27,6 +36,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 5,
+  },
+  buttonDisabled: {
+    opacity: 0.5,
   },
   buttonText: {
     fontSize: 16,
